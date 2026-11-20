@@ -1,0 +1,9 @@
+{
+  "name": "sara-letter-vercel-admin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node -e \"console.log('Using public/ as Vercel static output')\""
+  }
+}

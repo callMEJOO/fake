@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة متابعة الرسالة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#f8f4f0;--card:#fffdfa;--ink:#382f2c;--muted:#8d7d75;--rose:#a57474;--border:#eaded7}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#f4e6e3 0%,transparent 50%),var(--bg);font-family:Cairo,Tahoma,sans-serif;color:var(--ink);min-height:100vh}.shell{max-width:960px;margin:auto;padding:38px 20px 80px}.header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.label{font-size:12px;letter-spacing:2px;color:var(--rose)}h1{font-size:clamp(27px,5vw,40px);margin:4px 0 8px;line-height:1.5}.sub{color:var(--muted);margin:0;font-size:13px}.header a{font-size:13px;color:var(--rose);text-decoration:none;border:1px solid #d7c3bd;background:#fff9f6;padding:10px 15px;border-radius:9px}.panel,.metric,.chart{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 35px rgba(103,60,50,.045)}.panel{padding:26px;margin:30px 0}.panel h2{margin:0 0 8px;font-size:19px}.panel p{margin:3px 0 16px;font-size:13px;color:var(--muted)}.auth{display:flex;gap:12px;flex-wrap:wrap}.auth input{flex:1;min-width:180px;padding:13px 14px;border:1px solid #d9c9c0;border-radius:9px;font:inherit;outline-color:var(--rose);background:#fff}.btn{border:0;border-radius:9px;background:#916b66;color:white;cursor:pointer;padding:12px 22px;font:700 13px Cairo,sans-serif}.btn.secondary{background:#efe5df;color:#705650}.note{background:#f1e9e4;padding:14px 16px;border-radius:10px;color:#765f59;font-size:12px;line-height:2}.error{color:#ab4444;font-size:13px;margin-top:10px;min-height:22px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.metric{padding:24px}.metric .k{font-size:12px;color:var(--muted)}.metric strong{display:block;font-size:clamp(23px,4vw,37px);line-height:1.65;font-weight:700}.chart{padding:25px;margin-top:17px}.chart h2{font-size:18px;margin:0 0 18px}.rows{display:grid;gap:10px}.row{display:grid;grid-template-columns:105px 1fr 26px;align-items:center;gap:12px;font-size:12px}.track{background:#f1e9e5;height:11px;border-radius:100px;overflow:hidden}.fill{height:100%;min-width:2px;background:linear-gradient(90deg,#c99b93,#946864);border-radius:100px}.visits{list-style:none;margin:0;padding:0}.visits li{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #f1e7e2;color:#6b5d55;font-size:13px}.visits li:last-child{border-bottom:0}.hidden{display:none}#stats{margin-top:16px}.footer{color:#a39289;font-size:12px;margin-top:25px;text-align:center}@media(max-width:650px){.grid{grid-template-columns:1fr}.metric{padding:17px}.row{grid-template-columns:90px 1fr 25px}.panel,.chart{padding:19px}}
+</style>
+</head><body><main class="shell"><div class="header"><div><div class="label">PRIVATE DASHBOARD</div><h1>متابعة الرسالة ♡</h1><p class="sub">إحصائيات فتح الصفحة فقط · بتوقيت القاهرة</p></div><a href="/" target="_blank" rel="noopener">افتح صفحة الرسالة ↗</a></div>
+<section class="panel" id="login"><h2>دخول الأدمن</h2><p>اكتب مفتاح الأدمن اللي ضفته في إعدادات Vercel. المفتاح مش بيتخزن على المتصفح.</p><form class="auth" id="loginForm"><input id="key" type="password" placeholder="Admin key" required minlength="16" autocomplete="off"><button type="submit" class="btn">عرض الإحصائيات</button></form><div class="error" id="error" role="alert" aria-live="polite"></div><div class="note">اللوحة لا تحدد هوية الزوار أو أسماءهم. أي زيارة مسجلة لا تثبت إن سارة هي اللي فتحت اللينك أو قرأت الرسالة.</div></section>
+<div id="stats" class="hidden"><div class="grid"><div class="metric"><span class="k">إجمالي فتحات الصفحة</span><strong id="total">—</strong></div><div class="metric"><span class="k">فتحات اليوم</span><strong id="today">—</strong></div><div class="metric"><span class="k">آخر فتح للصفحة</span><strong id="latest" style="font-size:17px">—</strong></div></div>
+<section class="chart"><h2>الزيارات حسب اليوم</h2><div class="rows" id="days"></div></section><section class="chart"><h2>آخر الفتحات المسجّلة</h2><ul class="visits" id="recent"></ul></section><div style="text-align:center;margin-top:22px"><button id="refresh" class="btn secondary" type="button">تحديث البيانات</button></div></div>
+<div class="footer">إحصائيات مجهولة الهوية · كل جلسة صفحة تُحسب مرة تقريبًا · قد تتأخر البيانات قليلًا</div></main>
+<script>
+let activeKey = '';
+const $ = id => document.getElementById(id);
+const formatTime = iso => iso ? new Intl.DateTimeFormat('ar-EG', {timeZone:'Africa/Cairo',dateStyle:'medium',timeStyle:'short'}).format(new Date(iso)) : 'لسه مفيش زيارات';
+async function refresh() {
+  $('error').textContent = '';
+  try {
+    const response = await fetch('/api/stats', {headers:{'x-admin-key':activeKey},cache:'no-store'});
+    const type = response.headers.get('content-type') || '';
+    if (!type.includes('application/json')) {
+      throw new Error('خدمة الإحصائيات مش موجودة (404). تأكد إن ملفات مجلد api اتنشرت على Vercel.');
+    }
+    const data = await response.json();
+    if(!response.ok) throw new Error(data.error || 'حصل خطأ أثناء تحميل البيانات');
+    $('login').classList.add('hidden');
+    $('stats').classList.remove('hidden');
+    $('total').textContent = data.total.toLocaleString('ar-EG');
+    $('today').textContent = data.today.toLocaleString('ar-EG');
+    $('latest').textContent = formatTime(data.latest);
+    const max = Math.max(1,...data.series.map(x=>x.count));
+    $('days').replaceChildren();
+    if(!data.series.length) $('days').textContent='مفيش زيارات مسجّلة لسه';
+    for (const {date,count} of data.series) {
+      const row = document.createElement('div');row.className='row';
+      const dateElement = document.createElement('span');dateElement.textContent=date;
+      const track = document.createElement('div');track.className='track';
+      const fill = document.createElement('div');fill.className='fill';fill.style.width = (count/max*100)+'%'; track.appendChild(fill);
+      const amount = document.createElement('b');amount.textContent=count;
+      row.append(dateElement,track,amount);$('days').appendChild(row);
+    }
+    $('recent').replaceChildren();
+    if(!data.recent.length){const li=document.createElement('li');li.textContent='مفيش زيارات مسجّلة لسه';$('recent').appendChild(li);}
+    for(const iso of data.recent){const li=document.createElement('li');li.textContent=formatTime(iso);$('recent').appendChild(li);}
+  } catch (err) {
+    $('error').textContent = String(err.message || err);
+    $('login').classList.remove('hidden');$('stats').classList.add('hidden');
+  }
+}
+$('loginForm').addEventListener('submit', async event => {event.preventDefault(); activeKey=$('key').value; $('key').value=''; await refresh();});
+$('refresh').addEventListener('click',refresh);
+</script></body></html>
